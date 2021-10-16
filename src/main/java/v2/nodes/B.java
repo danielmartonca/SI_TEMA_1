@@ -20,6 +20,7 @@ public class B extends Node implements Runnable {
         try {
             while (currentTask <= 7) {
                 doTask();
+                System.out.flush();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -63,7 +64,7 @@ public class B extends Node implements Runnable {
 
     @Override
     public void task4() throws InterruptedException {
-        var encryptedKey = messenger.getMessageFromAMC();
+        var encryptedKey = messenger.getMessageFromBMC();
         print("Received encrypted key: " + encryptedKey);
     }
 
@@ -90,6 +91,7 @@ public class B extends Node implements Runnable {
     private void noTask() throws InterruptedException {
         print("No task at the moment.");
         while (Messenger.bIsWaiting)
-            Thread.sleep(5000);
+            Thread.sleep(1000);
+
     }
 }

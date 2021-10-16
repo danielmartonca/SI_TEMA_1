@@ -23,6 +23,7 @@ public class MC extends Node implements Runnable {
         try {
             while (currentTask <= 7) {
                 doTask();
+                System.out.flush();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -97,6 +98,6 @@ public class MC extends Node implements Runnable {
     private void noTask() throws InterruptedException {
         print("No task at the moment.");
         while (Messenger.mcIsWaiting)
-            Thread.sleep(5000);
+            Thread.sleep(1000);
     }
 }
