@@ -1,14 +1,43 @@
 package v2.algorithms;
 
-public class ECBAlgorithm implements EncryptionAlgorithm {
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+
+public class ECBAlgorithm implements EncryptionAlgorithmAES {
     @Override
-    public String encrypt(String txt, String key) {
-        return "encrypted_" + txt;
+    public String customEncrypt(String inputData, SecretKey key,IvParameterSpec iv) {
+        return inputData;
     }
 
     @Override
-    public String decrypt(String txt, String key) {
-        txt = txt.replace("encrypted_", "");
-        return "decrypted_" + txt;
+    public String customDecrypt(String inputData, SecretKey key,IvParameterSpec iv) {
+        return inputData;
+    }
+
+    public static String encrypt(String input, SecretKey key, IvParameterSpec iv)
+            throws NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException,
+            BadPaddingException, IllegalBlockSizeException {
+
+        Cipher cipher = Cipher.getInstance("ECB");
+        cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+        byte[] cipherText = cipher.doFinal(input.getBytes());
+        return Base64.getEncoder().encodeToString(cipherText);
+
+    }
+
+    public static String decrypt(String cipherText, SecretKey key, IvParameterSpec iv)
+            throws NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException,
+            BadPaddingException, IllegalBlockSizeException {
+
+        Cipher cipher = Cipher.getInstance("ECB");
+        cipher.init(Cipher.DECRYPT_MODE, key, iv);
+        byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText));
+        return new String(plainText);
     }
 }

@@ -2,14 +2,17 @@ package v2.nodes;
 
 import v2.messenger.Messenger;
 import v2.algorithms.ECBAlgorithm;
-import v2.algorithms.EncryptionAlgorithm;
+import v2.algorithms.EncryptionAlgorithmAES;
 import v2.algorithms.XXXAlgorithm;
 import v2.tasks.Tasks;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,15 +21,18 @@ public class A extends Node implements Runnable, Tasks {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_YELLOW = "\u001B[33m";
 
-    public A(Messenger messenger) {
+    public A(Messenger messenger, IvParameterSpec iv) throws NoSuchAlgorithmException {
         super(messenger);
+        this.iv = iv;
     }
 
-    private String filePath = "src/main/resources/text_file.txt";
-    private String key = null;
+    private final String filePath = "src/main/resources/text_file.txt";
+    private SecretKey key = null;
+    private final IvParameterSpec iv;
+
 
     void print(String msg) {
-        System.out.println(ANSI_YELLOW + "[A]:    " + msg + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "[A]:     " + msg + ANSI_RESET);
     }
 
     @Override
@@ -39,6 +45,7 @@ public class A extends Node implements Runnable, Tasks {
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -67,7 +74,7 @@ public class A extends Node implements Runnable, Tasks {
         messenger.sendMessageToAB(encryptionMode);
     }
 
-    private void requestKeyFromMC(EncryptionAlgorithm algorithm) throws InterruptedException {
+    private void requestKeyFromMC(EncryptionAlgorithmAES algorithm) throws InterruptedException {
         if (algorithm.getClass() == ECBAlgorithm.class)
             messenger.sendMessageToAMC("ECB");
         else
@@ -76,7 +83,6 @@ public class A extends Node implements Runnable, Tasks {
 
     @Override
     public void task1() throws InterruptedException {
-        if (currentTask != 1) return;
         var encryptionMode = readEncryptionMode();
         sendEncryptionModeToB(encryptionMode);
         requestKeyFromMC(algorithm);
@@ -100,10 +106,10 @@ public class A extends Node implements Runnable, Tasks {
     public void task4() throws InterruptedException {
         var encryptedKey = messenger.getMessageFromAMC();
         print("Received encrypted key: " + encryptedKey);
-        this.key = algorithm.decrypt(encryptedKey, K);
-        print("Decrypted key '" + encryptedKey + "' into '" + this.key + "'.");
+        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(algorithm.customDecrypt(encryptedKey, K, iv));
+        print("Decrypted key '" + encryptedKey + "' into '" + EncryptionAlgorithmAES.convertSecretKeyToString(this.key) + "'.");
 
-        Messenger.setAIsWaiting(true);
+        Messenger.setAIsWaiting(false);
         Messenger.setMCIsWaiting(true);
     }
 
@@ -132,7 +138,7 @@ public class A extends Node implements Runnable, Tasks {
         System.out.flush();
         for (var line : textFileLinesList) {
             Thread.sleep(1000);
-            var encryptedBlock = algorithm.encrypt(line, key);
+            var encryptedBlock = algorithm.customEncrypt(line, key, iv);
             messenger.sendMessageToAB(encryptedBlock);
         }
 

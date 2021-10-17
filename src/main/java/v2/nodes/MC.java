@@ -1,19 +1,26 @@
 package v2.nodes;
 
+import v2.algorithms.EncryptionAlgorithmAES;
 import v2.messenger.Messenger;
 import v2.algorithms.ECBAlgorithm;
 import v2.algorithms.XXXAlgorithm;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import java.security.NoSuchAlgorithmException;
 
 public class MC extends Node implements Runnable {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLUE = "\u001B[34m";
 
-    private final String k1 = "key1";
-    private final String k2 = "key2";
-    private String key;
+    private final SecretKey k1 = EncryptionAlgorithmAES.generateKey(128);
+    private final SecretKey k2 = EncryptionAlgorithmAES.generateKey(128);
+    private SecretKey key;
+    private final IvParameterSpec iv;
 
-    public MC(Messenger messenger) {
+    public MC(Messenger messenger, IvParameterSpec iv) throws NoSuchAlgorithmException {
         super(messenger);
+        this.iv = iv;
     }
 
     @Override
@@ -58,8 +65,8 @@ public class MC extends Node implements Runnable {
     @Override
     public void task3() throws InterruptedException {
         print("Starting encryption algorithm for key.");
-        var encryptedKey = algorithm.encrypt(key, K);
-        print("Successfully encrypted key:'" + encryptedKey + "' with K:'" + K + "'.");
+        var encryptedKey = algorithm.customEncrypt(EncryptionAlgorithmAES.convertSecretKeyToString(key), K, iv);
+        print("Successfully encrypted key:'" + encryptedKey + "' with K:'" + EncryptionAlgorithmAES.convertSecretKeyToString(K) + "'.");
         messenger.sendMessageToAMC(encryptedKey);
         print("Sent encrypted key to A.");
         messenger.sendMessageToBMC(encryptedKey);

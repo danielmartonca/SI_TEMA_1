@@ -1,18 +1,26 @@
 package v2.nodes;
 
+import v2.algorithms.EncryptionAlgorithmAES;
 import v2.messenger.Messenger;
 import v2.algorithms.ECBAlgorithm;
 import v2.algorithms.XXXAlgorithm;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import java.security.NoSuchAlgorithmException;
 
 public class B extends Node implements Runnable {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_PURPLE = "\u001B[35m";
 
-    private String key;
-
-    public B(Messenger messenger) {
+    public B(Messenger messenger, IvParameterSpec iv) throws NoSuchAlgorithmException {
         super(messenger);
+        this.iv = iv;
     }
+
+    private SecretKey key;
+    private final IvParameterSpec iv;
+
 
     @Override
     public void run() {
@@ -28,7 +36,7 @@ public class B extends Node implements Runnable {
     }
 
     void print(String msg) {
-        System.out.println(ANSI_PURPLE + "[B]:    " + msg + ANSI_RESET);
+        System.out.println(ANSI_PURPLE + "[B]:     " + msg + ANSI_RESET);
     }
 
     private void requestKeyFromMC(String encryptionAlgorithm) throws InterruptedException {
@@ -66,8 +74,8 @@ public class B extends Node implements Runnable {
     public void task4() throws InterruptedException {
         var encryptedKey = messenger.getMessageFromBMC();
         print("Received encrypted key: " + encryptedKey);
-        this.key = algorithm.decrypt(encryptedKey, K);
-        print("Decrypted key '" + encryptedKey + "' into '" + this.key + "'.");
+        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(algorithm.customDecrypt(encryptedKey, K, iv));
+        print("Decrypted key '" + encryptedKey + "' into '" + EncryptionAlgorithmAES.convertSecretKeyToString(this.key) + "'.");
 
 
         while (!Messenger.aIsWaiting) Thread.sleep(1000);
@@ -98,7 +106,7 @@ public class B extends Node implements Runnable {
         do {
             Thread.sleep(1000);
             message = messenger.getMessageFromAB();
-            var decryptedMessage = algorithm.decrypt(message, key);
+            var decryptedMessage = algorithm.customDecrypt(message, key, iv);
             print("Received '" + message + "' from A. After decryption i received '" + decryptedMessage + "'.");
             System.out.flush();
         } while (!message.equals("END"));

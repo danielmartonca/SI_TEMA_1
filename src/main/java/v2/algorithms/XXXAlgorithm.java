@@ -1,13 +1,16 @@
 package v2.algorithms;
 
-public class XXXAlgorithm implements EncryptionAlgorithm {
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+
+public class XXXAlgorithm implements EncryptionAlgorithmAES {
     @Override
-    public String encrypt(String txt, String key) {
-        return txt;
+    public String customEncrypt(String inputData, SecretKey key, IvParameterSpec iv) {
+        return inputData;
     }
 
     @Override
-    public String decrypt(String txt, String key) {
-        return "decrypted " + txt + " with key:" + key;
+    public String customDecrypt(String inputData, SecretKey key, IvParameterSpec iv) {
+        return inputData;
     }
 }

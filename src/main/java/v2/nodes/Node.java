@@ -1,15 +1,18 @@
 package v2.nodes;
 
 import v2.messenger.Messenger;
-import v2.algorithms.EncryptionAlgorithm;
+import v2.algorithms.EncryptionAlgorithmAES;
 import v2.tasks.Tasks;
+
+import javax.crypto.SecretKey;
+import java.security.NoSuchAlgorithmException;
 
 public abstract class Node implements Tasks {
     final protected Messenger messenger;
 
     protected int currentTask = 1;
-    protected EncryptionAlgorithm algorithm;
-    protected final String K = "universalKey";
+    protected EncryptionAlgorithmAES algorithm;
+    protected final SecretKey K = EncryptionAlgorithmAES.generateKey(128);
 
     protected void doTask() throws InterruptedException {
         if (currentTask == 1) task1();
@@ -23,7 +26,7 @@ public abstract class Node implements Tasks {
         currentTask++;
     }
 
-    public Node(Messenger messengerAB) {
+    public Node(Messenger messengerAB) throws NoSuchAlgorithmException {
         this.messenger = messengerAB;
     }
 
