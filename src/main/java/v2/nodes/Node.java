@@ -1,13 +1,15 @@
 package v2.nodes;
 
-import v2.Messenger;
+import v2.messenger.Messenger;
 import v2.algorithms.EncryptionAlgorithm;
 import v2.tasks.Tasks;
 
 public abstract class Node implements Tasks {
     final protected Messenger messenger;
+
     protected int currentTask = 1;
     protected EncryptionAlgorithm algorithm;
+    protected final String K = "universalKey";
 
     protected void doTask() throws InterruptedException {
         if (currentTask == 1) task1();
@@ -17,7 +19,7 @@ public abstract class Node implements Tasks {
         if (currentTask == 5) task5();
         if (currentTask == 6) task6();
         if (currentTask == 7) task7();
-        if (currentTask > 7) quit();
+        if (currentTask == 8) quit();
         currentTask++;
     }
 
@@ -25,21 +27,10 @@ public abstract class Node implements Tasks {
         this.messenger = messengerAB;
     }
 
-    public void sendMessage(String message) {
-        try {
-            messenger.sendMessageToAB(message);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    void quit() {
+        if (currentTask > 7)
+            print("Thread finished action.");
     }
 
-    public String getMessage() {
-        try {
-            return messenger.getMessageFromAB();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+    abstract void print(String msg);
 }

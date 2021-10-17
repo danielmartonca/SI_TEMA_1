@@ -1,11 +1,11 @@
-package v2;
+package v2.messenger;
 
 import java.util.Vector;
 
 public class Messenger {
 
     // initialization of queue size
-    private static final int MAX = 5;
+    private static final int MAX = 1;
     private static final Vector<String> messagesAB = new Vector<>();
     private static final Vector<String> messagesAMC = new Vector<>();
     private static final Vector<String> messagesBMC = new Vector<>();

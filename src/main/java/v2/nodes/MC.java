@@ -1,6 +1,6 @@
 package v2.nodes;
 
-import v2.Messenger;
+import v2.messenger.Messenger;
 import v2.algorithms.ECBAlgorithm;
 import v2.algorithms.XXXAlgorithm;
 
@@ -8,10 +8,9 @@ public class MC extends Node implements Runnable {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLUE = "\u001B[34m";
 
-    private final int k1 = 1;
-    private final int k2 = 2;
-    private final int K = 3;
-    private int key;
+    private final String k1 = "key1";
+    private final String k2 = "key2";
+    private String key;
 
     public MC(Messenger messenger) {
         super(messenger);
@@ -21,7 +20,7 @@ public class MC extends Node implements Runnable {
     public void run() {
         print("Started");
         try {
-            while (currentTask <= 7) {
+            while (currentTask <= 8) {
                 doTask();
                 System.out.flush();
             }
@@ -31,13 +30,13 @@ public class MC extends Node implements Runnable {
     }
 
 
-    private void print(String msg) {
+    public void print(String msg) {
         System.out.println(ANSI_BLUE + "[MC]:    " + msg + ANSI_RESET);
     }
 
     @Override
     public void task1() throws InterruptedException {
-        noTask();
+        waitForSignal();
     }
 
     @Override
@@ -59,43 +58,39 @@ public class MC extends Node implements Runnable {
     @Override
     public void task3() throws InterruptedException {
         print("Starting encryption algorithm for key.");
-        var encryptedKey = algorithm.encrypt(String.valueOf(key), String.valueOf(K));
-        print("Successfully encrypted key:" + encryptedKey);
+        var encryptedKey = algorithm.encrypt(key, K);
+        print("Successfully encrypted key:'" + encryptedKey + "' with K:'" + K + "'.");
         messenger.sendMessageToAMC(encryptedKey);
-        print("Sent key to A.");
+        print("Sent encrypted key to A.");
         messenger.sendMessageToBMC(encryptedKey);
-        print("Sent key to B.");
-        Messenger.setMCIsWaiting(true);
+        print("Sent encrypted key to B.");
+        Messenger.setMCIsWaiting(false);
         Messenger.setAIsWaiting(false);
         Messenger.setBIsWaiting(false);
     }
 
     @Override
-    public void task4() throws InterruptedException {
-        noTask();
+    public void task4() {
+        //do nothing
     }
 
     @Override
-    public void task5() throws InterruptedException {
-
+    public void task5() {
+        //do nothing
     }
 
     @Override
-    public void task6() throws InterruptedException {
-
+    public void task6() {
+        //do nothing
     }
 
     @Override
-    public void task7() throws InterruptedException {
-
+    public void task7() {
+        //do nothing
     }
 
-    @Override
-    public void quit() {
 
-    }
-
-    private void noTask() throws InterruptedException {
+    private void waitForSignal() throws InterruptedException {
         print("No task at the moment.");
         while (Messenger.mcIsWaiting)
             Thread.sleep(1000);

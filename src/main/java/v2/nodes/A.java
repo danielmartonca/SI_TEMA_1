@@ -1,11 +1,17 @@
 package v2.nodes;
 
-import v2.Messenger;
+import v2.messenger.Messenger;
 import v2.algorithms.ECBAlgorithm;
 import v2.algorithms.EncryptionAlgorithm;
 import v2.algorithms.XXXAlgorithm;
 import v2.tasks.Tasks;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 public class A extends Node implements Runnable, Tasks {
@@ -16,7 +22,10 @@ public class A extends Node implements Runnable, Tasks {
         super(messenger);
     }
 
-    private void print(String msg) {
+    private String filePath = "src/main/resources/text_file.txt";
+    private String key = null;
+
+    void print(String msg) {
         System.out.println(ANSI_YELLOW + "[A]:    " + msg + ANSI_RESET);
     }
 
@@ -24,14 +33,13 @@ public class A extends Node implements Runnable, Tasks {
     public void run() {
         print("Started");
         try {
-            while (currentTask <= 7) {
+            while (currentTask <= 8) {
                 doTask();
                 System.out.flush();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        print("Closing thread.");
     }
 
     private String readEncryptionMode() {
@@ -66,7 +74,6 @@ public class A extends Node implements Runnable, Tasks {
             messenger.sendMessageToAMC("XXX");
     }
 
-
     @Override
     public void task1() throws InterruptedException {
         if (currentTask != 1) return;
@@ -81,33 +88,75 @@ public class A extends Node implements Runnable, Tasks {
 
     @Override
     public void task2() throws InterruptedException {
-        noTask();
+        waitForSignal();
     }
 
     @Override
     public void task3() throws InterruptedException {
-        noTask();
+        waitForSignal();
     }
 
     @Override
     public void task4() throws InterruptedException {
         var encryptedKey = messenger.getMessageFromAMC();
         print("Received encrypted key: " + encryptedKey);
+        this.key = algorithm.decrypt(encryptedKey, K);
+        print("Decrypted key '" + encryptedKey + "' into '" + this.key + "'.");
 
         Messenger.setAIsWaiting(true);
+        Messenger.setMCIsWaiting(true);
     }
 
     @Override
     public void task5() throws InterruptedException {
-        noTask();
+        waitForSignal();
     }
 
     @Override
-    public void task6() {
+    public void task6() throws InterruptedException {
+        var msg = messenger.getMessageFromAB();
+        if (msg.equalsIgnoreCase("START")) {
+            print("Received signal '" + msg + "'.     Starting sending blocks of encrypted text.");
+            Messenger.setAIsWaiting(false);
+            Messenger.setBIsWaiting(false);
+            return;
+        }
+        print("Received '" + msg + "'. UNKNOWN");
+        Messenger.setAIsWaiting(false);
     }
 
     @Override
-    public void task7() {
+    public void task7() throws InterruptedException {
+        List<String> textFileLinesList = getListOfTextFileLines();
+        print("Sending encrypted text to B.");
+        System.out.flush();
+        for (var line : textFileLinesList) {
+            Thread.sleep(1000);
+            var encryptedBlock = algorithm.encrypt(line, key);
+            messenger.sendMessageToAB(encryptedBlock);
+        }
+
+        messenger.sendMessageToAB("END");
+    }
+
+    private List<String> getListOfTextFileLines() {
+        List<String> list = new LinkedList<>();
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(this.filePath));
+            var line = in.readLine();
+            while (line != null) {
+                list.add(line);
+                line = in.readLine();
+            }
+            in.close();
+        } catch (FileNotFoundException e) {
+            print("ERROR!!! COULDN'T FIND FILE");
+            e.printStackTrace();
+        } catch (IOException ioException) {
+            print("ERROR!!! FOUND FILE BUT COULDN'T READ FROM IT");
+            ioException.printStackTrace();
+        }
+        return list;
     }
 
     @Override
@@ -116,7 +165,7 @@ public class A extends Node implements Runnable, Tasks {
             print("Thread finished action.");
     }
 
-    private void noTask() throws InterruptedException {
+    private void waitForSignal() throws InterruptedException {
         print("No task at the moment.");
         while (Messenger.aIsWaiting)
             Thread.sleep(1000);

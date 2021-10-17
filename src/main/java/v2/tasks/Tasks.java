@@ -15,6 +15,4 @@ public interface Tasks {
 
     void task7() throws InterruptedException;
 
-    void quit();
-
 }
