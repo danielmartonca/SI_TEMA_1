@@ -36,13 +36,14 @@ public class A extends Node implements Runnable, Tasks {
 
     @Override
     public void task1() {
-        voidTask();
-//        var encryptionMode = readEncryptionMode();
-//        sendMessage(MessagePrefix.B, encryptionMode);
-//        if (algorithm.getClass() == ECBAlgorithm.class)
-//            sendMessage(MessagePrefix.MC, "ECB");
-//        else
-//            sendMessage(MessagePrefix.MC, "XXX");
+        var encryptionAlgorithm = readEncryptionMode();
+        sendMessage(MessagePrefix.B, encryptionAlgorithm);
+
+        if (ECBAlgorithm.class.equals(algorithm.getClass())) {
+            sendMessage(MessagePrefix.MC, "k1");
+        } else if (XXXAlgorithm.class.equals(algorithm.getClass())) {
+            sendMessage(MessagePrefix.MC, "k2");
+        }
     }
 
     @Override

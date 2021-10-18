@@ -170,7 +170,7 @@ public abstract class Node implements Tasks {
     protected void voidTask() {
         try {
             print("No task to do at step " + currentTask + '.');
-//            sendMessage(MessagePrefix.None, "");
+            sendMessage(MessagePrefix.None, "");
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
