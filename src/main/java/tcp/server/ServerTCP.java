@@ -1,4 +1,4 @@
-package v1.tcp.server;
+package tcp.server;
 
 import general.NodeRole;
 import general.Printer;
@@ -27,7 +27,7 @@ public class ServerTCP implements Printer {
         }
     }
 
-    public static int PORT = 6666;
+    public static final int PORT = 6666;
 
     final static Node A, B, MC;
 
@@ -37,7 +37,7 @@ public class ServerTCP implements Printer {
         MC = new Node("3");
     }
 
-    public static boolean isRunning = true;
+    public static final boolean isRunning = true;
 
     static void tryToSetFinishedTaskFlag() {
         if (threadA != null && threadB != null && threadMC != null)
@@ -59,7 +59,6 @@ public class ServerTCP implements Printer {
             while (isRunning) {
                 new Thread(new MockClient(serverSocket.accept())).start();
             }
-            stop();
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }

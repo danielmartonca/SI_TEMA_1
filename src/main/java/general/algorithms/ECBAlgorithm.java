@@ -13,7 +13,9 @@ public class ECBAlgorithm implements EncryptionAlgorithmAES {
 
     @Override
     public String decrypt(List<String> cipherTextList, SecretKey key, IvParameterSpec iv) {
-        return cipherTextList.get(0);
+        if (cipherTextList.size() == 1)
+            return cipherTextList.get(0);
+        else return cipherTextList.toString();
     }
 
 

@@ -1,12 +1,10 @@
-package v1.tcp.client.nodes;
+package tcp.clients;
 
 import general.algorithms.ECBAlgorithm;
 import general.algorithms.EncryptionAlgorithmAES;
 import general.algorithms.XXXAlgorithm;
 import general.tasks.Tasks;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -20,7 +18,7 @@ public class A extends Node implements Runnable, Tasks {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_YELLOW = "\u001B[33m";
 
-    public A(String ip, int port) throws NoSuchAlgorithmException, IOException, ClassNotFoundException {
+    public A(String ip, int port) throws IOException {
         super(ip, port);
     }
 
@@ -68,13 +66,11 @@ public class A extends Node implements Runnable, Tasks {
 
     @Override
     public void task4() {
-        voidTask();
-//        var encryptedKey = messenger.getMessageFromAMC();
-//        print("Received encrypted key: " + encryptedKey);
-//        var decryptedKeyString = algorithm.decrypt(List.of(encryptedKey), K, iv);
-//        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(decryptedKeyString);
-//        print("Decrypted key '" + encryptedKey + "' into '" + EncryptionAlgorithmAES.convertSecretKeyToString(this.key) + "'.");
+        var encryptedKey = getSingleMessage();
+        var decryptedKeyString = algorithm.decrypt(List.of(encryptedKey), K, iv);
+        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(decryptedKeyString);
 
+        print("Task " + currentTask + ':' + "   Decrypted key '" + encryptedKey + "' into '" + EncryptionAlgorithmAES.convertSecretKeyToString(this.key) + "'.");
     }
 
     @Override
@@ -84,31 +80,26 @@ public class A extends Node implements Runnable, Tasks {
 
     @Override
     public void task6() {
-        voidTask();
-//        var msg = messenger.getMessageFromAB();
-//        if (msg.equalsIgnoreCase("START")) {
-//            print("Received signal '" + msg + "'.     Starting sending blocks of encrypted text.");
-//            Messenger.setAIsWaiting(false);
-//            Messenger.setBIsWaiting(false);
-//            return;
-//        }
-//        print("Received '" + msg + "'. UNKNOWN");
-//        Messenger.setAIsWaiting(false);
+        var msg = getSingleMessage();
+        if (msg.equalsIgnoreCase("Start communication.")) {
+            print("Task " + currentTask + ':' + "   Received signal '" + msg + "'.     Starting sending blocks of encrypted text.");
+        } else {
+            print("Task " + currentTask + ':' + "   ERROR! DID NOT RECEIVE START COMMUNICATION SIGNAL.");
+            stopConnection();
+        }
     }
 
     @Override
     public void task7() {
-        voidTask();
-//        List<String> textFileLinesList = getListOfTextFileLines();
-//        print("Sending encrypted text to B.");
-//        System.out.flush();
-//        for (var line : textFileLinesList) {
-//            var encryptedBlockList = algorithm.encrypt(line, key, iv);
-//            for (var encryptedBlock : encryptedBlockList)
-//                messenger.sendMessageToAB(encryptedBlock);
-//        }
-//
-//        messenger.sendMessageToAB("END");
+        List<String> textFileLinesList = getListOfTextFileLines();
+        print("Sending encrypted text to B.");
+        System.out.flush();
+        for (var line : textFileLinesList) {
+            var encryptedBlockList = algorithm.encrypt(line, key, iv);
+            for (var encryptedBlock : encryptedBlockList)
+                sendMessage(MessagePrefix.B, encryptedBlock);
+        }
+        print("Task " + currentTask + ':' + "   Sent the crypto text towards B.");
     }
 
 

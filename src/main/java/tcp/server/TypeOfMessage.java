@@ -1,4 +1,4 @@
-package v1.tcp.server;
+package tcp.server;
 
 enum TypeOfMessage {
     READ, SEND, SIGNAL

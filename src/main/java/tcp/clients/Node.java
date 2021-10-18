@@ -1,4 +1,4 @@
-package v1.tcp.client.nodes;
+package tcp.clients;
 
 import general.algorithms.EncryptionAlgorithmAES;
 import general.tasks.Tasks;
@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,8 +25,9 @@ public abstract class Node implements Tasks {
     protected EncryptionAlgorithmAES algorithm;
     protected final SecretKey K = EncryptionAlgorithmAES.convertStringToSecretKey("ypmWRcKaEkYYxxnBdjWAxw==");          //=EncryptionAlgorithmAES.generateKey(128);
     protected final IvParameterSpec iv = new IvParameterSpec(new byte[]{38, 6, -103, 37, 45, 98, 120, 17, 126, 109, -21, 35, -56, 108, -102, -47});   //=EncryptionAlgorithmAES.generateIV();
+    protected SecretKey key;
 
-    protected Node(String ip, int port) throws NoSuchAlgorithmException, IOException, ClassNotFoundException {
+    protected Node(String ip, int port) throws IOException {
         clientSocket = new Socket(ip, port);
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));

@@ -1,14 +1,12 @@
-package v1.tcp.client.nodes;
+package tcp.clients;
 
 import general.algorithms.ECBAlgorithm;
 import general.algorithms.EncryptionAlgorithmAES;
 import general.algorithms.XXXAlgorithm;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 public class MC extends Node implements Runnable {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -18,7 +16,7 @@ public class MC extends Node implements Runnable {
     private final SecretKey k2 = EncryptionAlgorithmAES.generateKey(128);
     private SecretKey key;
 
-    public MC(String ip, int port) throws NoSuchAlgorithmException, IOException, ClassNotFoundException {
+    public MC(String ip, int port) throws NoSuchAlgorithmException, IOException {
         super(ip, port);
     }
 
@@ -69,25 +67,21 @@ public class MC extends Node implements Runnable {
     @Override
     public void task4() {
         voidTask();
-        //do nothing
     }
 
     @Override
     public void task5() {
         voidTask();
-        //do nothing
     }
 
     @Override
     public void task6() {
         voidTask();
-        //do nothing
     }
 
     @Override
     public void task7() {
         voidTask();
-        //do nothing
     }
 
     @Override

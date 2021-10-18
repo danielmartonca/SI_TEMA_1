@@ -1,4 +1,4 @@
-package v1.tcp.client.nodes;
+package tcp.clients;
 
 public enum MessagePrefix {
     A, B, MC, Read, None,FinishedTask

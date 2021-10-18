@@ -1,19 +1,18 @@
-package v1.tcp.client.nodes;
+package tcp.clients;
 
 import general.algorithms.ECBAlgorithm;
 import general.algorithms.EncryptionAlgorithmAES;
 import general.algorithms.XXXAlgorithm;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 public class B extends Node implements Runnable {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_PURPLE = "\u001B[35m";
 
-    public B(String ip, int port) throws NoSuchAlgorithmException, IOException, ClassNotFoundException {
+    public B(String ip, int port) throws IOException {
         super(ip, port);
     }
 
@@ -55,20 +54,17 @@ public class B extends Node implements Runnable {
 
     @Override
     public void task4() {
-        voidTask();
-//        var encryptedKey = messenger.getMessageFromBMC();
-//        print("Received encrypted key: " + encryptedKey);
-//        var decryptedKeyString = algorithm.decrypt(List.of(encryptedKey), K, iv);
-//        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(decryptedKeyString);
-//        print("Decrypted key '" + encryptedKey + "' into '" + EncryptionAlgorithmAES.convertSecretKeyToString(this.key) + "'.");
-//
+        var encryptedKey = getSingleMessage();
+        var decryptedKeyString = algorithm.decrypt(List.of(encryptedKey), K, iv);
+        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(decryptedKeyString);
+
+        print("Task " + currentTask + ':' + "   Decrypted key '" + encryptedKey + "' into '" + EncryptionAlgorithmAES.convertSecretKeyToString(this.key) + "'.");
     }
 
     @Override
     public void task5() {
-        voidTask();
-//        messenger.sendMessageToAB("Start");
-//        print("Sent signal to A to start sending encrypted text.");
+        sendMessage(MessagePrefix.A, "Start communication.");
+        print("Task " + currentTask + ':' + "   Informed A to start communication.");
     }
 
     @Override
@@ -78,30 +74,18 @@ public class B extends Node implements Runnable {
 
     @Override
     public void task7() {
-        voidTask();
-//        
-//        messenger.getMessageFromAB();
-//        String message;
-//        List<String> encryptedCipherTextList = new LinkedList<>();
-//        do {
-//            message = messenger.getMessageFromAB();
-//            encryptedCipherTextList.add(message);
-//        } while (!message.equals("END"));
-//
-//        print("Decrypted the fallowing text:");
-//        var decryptedText = algorithm.decrypt(encryptedCipherTextList, key, iv);
-//        print(decryptedText);
-//        System.out.flush();
+        List<String> encryptedCipherTextList = getMessagesList();
 
+        print("Decrypted the fallowing text:");
+        var decryptedText = algorithm.decrypt(encryptedCipherTextList, key, iv);
+        print(decryptedText);
+        print("Task " + currentTask + ':' + "   Finished processing the crypto text.");
+        System.out.flush();
     }
 
     @Override
     public void run() {
         start();
-    }
-
-    private void requestKeyFromMC(String encryptionAlgorithm) {
-
     }
 
 

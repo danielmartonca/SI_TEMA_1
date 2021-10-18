@@ -1,4 +1,4 @@
-package v1.tcp.server;
+package tcp.server;
 
 import general.NodeRole;
 
@@ -12,12 +12,11 @@ public class ClientThread implements Runnable {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_YELLOW = "\u001B[33m";
 
-    protected Socket socket;
+    protected final Socket socket;
     protected PrintWriter out;
     protected BufferedReader in;
-
-    private NodeRole role;
     boolean finishedTask = false;
+    private NodeRole role;
 
     public ClientThread(Socket socket) {
         this.socket = socket;
@@ -32,17 +31,13 @@ public class ClientThread implements Runnable {
 
     @Override
     public void run() {
-        try {
-            getRole();
-            System.out.println("This is: " + ANSI_YELLOW + role + ANSI_RESET + " waiting for requests to send or get messages.");
-            awaitRequest();
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
+        getRole();
+        System.out.println("This is: " + ANSI_YELLOW + role + ANSI_RESET + " waiting for requests to send or get messages.");
+        awaitRequest();
     }
 
 
-    private void getRole() throws IOException {
+    private void getRole() {
         try {
             do {
                 var line = in.readLine();
@@ -230,5 +225,18 @@ public class ClientThread implements Runnable {
             msg = node.getMessage();
         }
         out.println("[D]"); //DONE
+    }
+
+    private void closeConnection() {
+        try {
+            this.out.close();
+            this.in.close();
+            this.socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            System.out.println(role.toString() + " closing connection.");
+        }
+        System.exit(0);
     }
 }
