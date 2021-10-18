@@ -1,8 +1,8 @@
-package v2.nodes;
+package v2.threads.nodes;
 
-import v2.messenger.Messenger;
-import v2.algorithms.EncryptionAlgorithmAES;
-import v2.tasks.Tasks;
+import v2.threads.messenger.Messenger;
+import general.algorithms.EncryptionAlgorithmAES;
+import general.tasks.Tasks;
 
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;

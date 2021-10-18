@@ -1,4 +1,4 @@
-package v2.tasks;
+package general.tasks;
 
 public interface Tasks {
     void task1() throws InterruptedException;

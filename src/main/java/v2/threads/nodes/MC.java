@@ -1,9 +1,9 @@
-package v2.nodes;
+package v2.threads.nodes;
 
-import v2.algorithms.EncryptionAlgorithmAES;
-import v2.messenger.Messenger;
-import v2.algorithms.ECBAlgorithm;
-import v2.algorithms.XXXAlgorithm;
+import general.algorithms.EncryptionAlgorithmAES;
+import v2.threads.messenger.Messenger;
+import general.algorithms.ECBAlgorithm;
+import general.algorithms.XXXAlgorithm;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;

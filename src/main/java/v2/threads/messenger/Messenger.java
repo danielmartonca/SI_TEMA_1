@@ -1,4 +1,4 @@
-package v2.messenger;
+package v2.threads.messenger;
 
 import java.util.Vector;
 

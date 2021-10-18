@@ -1,8 +1,7 @@
-package v2.algorithms;
+package general.algorithms;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import java.util.LinkedList;
 import java.util.List;
 
 public class XXXAlgorithm implements EncryptionAlgorithmAES {

@@ -1,4 +1,4 @@
-package v2.algorithms;
+package general.algorithms;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;

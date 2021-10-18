@@ -1,10 +1,10 @@
-package v2;
+package v2.threads;
 
-import v2.algorithms.EncryptionAlgorithmAES;
-import v2.messenger.Messenger;
-import v2.nodes.A;
-import v2.nodes.B;
-import v2.nodes.MC;
+import general.algorithms.EncryptionAlgorithmAES;
+import v2.threads.messenger.Messenger;
+import v2.threads.nodes.A;
+import v2.threads.nodes.B;
+import v2.threads.nodes.MC;
 
 import java.security.NoSuchAlgorithmException;
 
