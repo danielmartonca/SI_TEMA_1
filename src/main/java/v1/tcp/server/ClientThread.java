@@ -81,7 +81,7 @@ public class ClientThread implements Runnable {
         while (true) {
             try {
                 while (this.finishedTask)
-                    Thread.sleep(1000);         //wait for other threads to finish their tasks
+                    Thread.sleep(100);         //wait for other threads to finish their tasks
 
                 out.println("[START TASK]");           //signal nodes to start actions
 
@@ -162,7 +162,7 @@ public class ClientThread implements Runnable {
     }
 
     private String getMessageHead(String message) {
-        if (message.length() <= 2) return "N";
+        if (message.length() <= 1) return "N";
         var index1 = message.indexOf('[');
         var index2 = message.indexOf(']');
         return message.substring(index1 + 1, index2);

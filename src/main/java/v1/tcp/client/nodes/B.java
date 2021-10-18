@@ -1,5 +1,8 @@
 package v1.tcp.client.nodes;
 
+import general.algorithms.ECBAlgorithm;
+import general.algorithms.XXXAlgorithm;
+
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -21,7 +24,7 @@ public class B extends Node implements Runnable {
     @Override
     void loginIntoServer() {
         sendMessage(MessagePrefix.None, "B");
-        print(getSingleMessage());
+        print(getLoginMessage());
     }
 
     @Override
@@ -32,17 +35,19 @@ public class B extends Node implements Runnable {
     @Override
     public void task2() {
         voidTask();
-//        var encryptionAlgorithm = getSingleMessage();
-//        print("Received " + encryptionAlgorithm + " from A.");
-//        if (encryptionAlgorithm.equals("ECB")) {
-//            algorithm = new ECBAlgorithm();
-//            sendMessage(MessagePrefix.MC, "k1");
-//            print("Sent request to MC for key1");
-//        } else {
-//            algorithm = new XXXAlgorithm();
-//            sendMessage(MessagePrefix.MC, "k2");
-//            print("Sent request to MC for key2");
-//        }
+        var encryptionAlgorithm = getSingleMessage();
+
+        if (encryptionAlgorithm.equals("ECB")) {
+            algorithm = new ECBAlgorithm();
+            sendMessage(MessagePrefix.MC, "k1");
+            print("Sent request to MC for key1");
+        } else {
+            algorithm = new XXXAlgorithm();
+            sendMessage(MessagePrefix.MC, "k2");
+            print("Sent request to MC for key2");
+        }
+
+        print("Task " + currentTask + ':' + "   Read algorithm: '" + encryptionAlgorithm + "' from A and sent key request to MC.");
     }
 
     @Override

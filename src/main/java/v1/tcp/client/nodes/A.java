@@ -31,12 +31,18 @@ public class A extends Node implements Runnable, Tasks {
 
     void loginIntoServer() {
         sendMessage(MessagePrefix.None, "A");
-        print(getSingleMessage());
+        print(getLoginMessage());
     }
 
     @Override
     public void task1() {
-        var encryptionAlgorithm = readEncryptionMode();
+        //TODO DELETE COMMENT
+        //HARDCODE
+        var encryptionAlgorithm = "ECB";
+        algorithm = new ECBAlgorithm();
+
+
+        //        var encryptionAlgorithm = readEncryptionMode();
         sendMessage(MessagePrefix.B, encryptionAlgorithm);
 
         if (ECBAlgorithm.class.equals(algorithm.getClass())) {
@@ -44,6 +50,8 @@ public class A extends Node implements Runnable, Tasks {
         } else if (XXXAlgorithm.class.equals(algorithm.getClass())) {
             sendMessage(MessagePrefix.MC, "k2");
         }
+
+        print("Task " + currentTask + ':' + "   Read algorithm: '" + encryptionAlgorithm + "' from user and sent key request to MC.");
     }
 
     @Override

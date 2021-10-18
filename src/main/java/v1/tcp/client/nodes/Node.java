@@ -44,6 +44,7 @@ public abstract class Node implements Tasks {
             e.printStackTrace();
             print("FAILED TO CLOSE CONNECTIONS");
         }
+        System.exit(0);
     }
 
 
@@ -97,7 +98,16 @@ public abstract class Node implements Tasks {
 
     protected String getSingleMessage() {
         try {
-            return in.readLine();
+            sendMessage(MessagePrefix.Read, "");
+            var message = in.readLine();
+            var doneFlag = in.readLine();
+
+            if (!doneFlag.equals("[D]")) {
+                System.err.println("FAILED TO GET [D] FLAG AFTER READING SINGLE MESSAGE");
+                stopConnection();
+            }
+
+            return message;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,11 +116,16 @@ public abstract class Node implements Tasks {
 
 
     protected void getServerFlag() {
-        var flag = getSingleMessage();//get flag to start task
-        if (!flag.equals("[START TASK]")) {
-            print("ERROR WHILE READING FLAG TO START TASK. GOT:" + flag);
-            System.out.flush();
-            stopConnection();
+        try {
+            var flag = in.readLine();//get flag to start task
+            if (!flag.equals("[START TASK]")) {
+                print("ERROR WHILE READING FLAG TO START TASK. GOT:" + flag);
+                System.out.flush();
+                stopConnection();
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -140,7 +155,7 @@ public abstract class Node implements Tasks {
                 case 7 -> task7();
             }
 
-            Thread.sleep(1000);
+            Thread.sleep(1);
             currentTask++;
 
             sendFlagToServer();
@@ -171,11 +186,22 @@ public abstract class Node implements Tasks {
         try {
             print("No task to do at step " + currentTask + '.');
             sendMessage(MessagePrefix.None, "");
-            Thread.sleep(2000);
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
             print("SLEEP FAILED");
         }
+    }
+
+    protected String getLoginMessage() {
+        try {
+            return in.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("FAILED TO LOGIN");
+            stopConnection();
+        }
+        return null;
     }
 
     abstract void loginIntoServer();

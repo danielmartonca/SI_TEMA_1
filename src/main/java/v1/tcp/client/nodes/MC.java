@@ -27,15 +27,17 @@ public class MC extends Node implements Runnable {
     @Override
     void loginIntoServer() {
         sendMessage(MessagePrefix.None, "MC");
-        print(getSingleMessage());
+        print(getLoginMessage());
     }
 
     @Override
-    public void task1() { voidTask();
+    public void task1() {
+        voidTask();
     }
 
     @Override
-    public void task2() { voidTask();
+    public void task2() {
+        voidTask();
 //        var msg = getMessagesList().get(0);
 //        print("Received msg. Will use the key for: " + msg);
 //        if (msg.equals("ECB")) {
@@ -49,7 +51,8 @@ public class MC extends Node implements Runnable {
     }
 
     @Override
-    public void task3() { voidTask();
+    public void task3() {
+        voidTask();
 //        print("Starting encryption algorithm for key.");
 //        var encryptedBlockList = algorithm.encrypt(EncryptionAlgorithmAES.convertSecretKeyToString(key), K, iv);
 //        var encryptedKey = encryptedBlockList.get(0);
@@ -61,22 +64,26 @@ public class MC extends Node implements Runnable {
     }
 
     @Override
-    public void task4() { voidTask();
+    public void task4() {
+        voidTask();
         //do nothing
     }
 
     @Override
-    public void task5() { voidTask();
+    public void task5() {
+        voidTask();
         //do nothing
     }
 
     @Override
-    public void task6() { voidTask();
+    public void task6() {
+        voidTask();
         //do nothing
     }
 
     @Override
-    public void task7() { voidTask();
+    public void task7() {
+        voidTask();
         //do nothing
     }
 
