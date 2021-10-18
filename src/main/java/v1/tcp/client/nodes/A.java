@@ -1,10 +1,12 @@
 package v1.tcp.client.nodes;
 
 import general.algorithms.ECBAlgorithm;
+import general.algorithms.EncryptionAlgorithmAES;
 import general.algorithms.XXXAlgorithm;
 import general.tasks.Tasks;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -23,7 +25,7 @@ public class A extends Node implements Runnable, Tasks {
     }
 
     private final String textFilePath = "src/main/resources/text_file.txt";
-    private SecretKey key = null;
+
 
     void print(String msg) {
         System.out.println(ANSI_YELLOW + "[A]:     " + msg + ANSI_RESET);

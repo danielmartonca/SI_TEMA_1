@@ -24,8 +24,8 @@ public abstract class Node implements Tasks {
 
     protected int currentTask = 1;
     protected EncryptionAlgorithmAES algorithm;
-    protected SecretKey K;          //=EncryptionAlgorithmAES.generateKey(128);
-    protected IvParameterSpec iv;   //=EncryptionAlgorithmAES.generateIV();
+    protected final SecretKey K = EncryptionAlgorithmAES.convertStringToSecretKey("ypmWRcKaEkYYxxnBdjWAxw==");          //=EncryptionAlgorithmAES.generateKey(128);
+    protected final IvParameterSpec iv = new IvParameterSpec(new byte[]{38, 6, -103, 37, 45, 98, 120, 17, 126, 109, -21, 35, -56, 108, -102, -47});   //=EncryptionAlgorithmAES.generateIV();
 
     protected Node(String ip, int port) throws NoSuchAlgorithmException, IOException, ClassNotFoundException {
         clientSocket = new Socket(ip, port);
@@ -98,11 +98,12 @@ public abstract class Node implements Tasks {
 
     protected String getSingleMessage() {
         try {
-            sendMessage(MessagePrefix.Read, "");
+            sendFlagToStartGivingMessages();
+
             var message = in.readLine();
             var doneFlag = in.readLine();
 
-            if (!doneFlag.equals("[D]")) {
+            if (!ifItIsFlagToStopReadingMessages(doneFlag)) {
                 System.err.println("FAILED TO GET [D] FLAG AFTER READING SINGLE MESSAGE");
                 stopConnection();
             }
@@ -203,6 +204,7 @@ public abstract class Node implements Tasks {
         }
         return null;
     }
+
 
     abstract void loginIntoServer();
 

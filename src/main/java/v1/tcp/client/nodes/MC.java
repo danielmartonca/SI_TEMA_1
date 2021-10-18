@@ -5,8 +5,10 @@ import general.algorithms.EncryptionAlgorithmAES;
 import general.algorithms.XXXAlgorithm;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class MC extends Node implements Runnable {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -19,6 +21,7 @@ public class MC extends Node implements Runnable {
     public MC(String ip, int port) throws NoSuchAlgorithmException, IOException, ClassNotFoundException {
         super(ip, port);
     }
+
 
     public void print(String msg) {
         System.out.println(ANSI_BLUE + "[MC]:    " + msg + ANSI_RESET);
@@ -38,29 +41,29 @@ public class MC extends Node implements Runnable {
     @Override
     public void task2() {
         voidTask();
-//        var msg = getMessagesList().get(0);
-//        print("Received msg. Will use the key for: " + msg);
-//        if (msg.equals("ECB")) {
-//            key = k1;
-//            algorithm = new ECBAlgorithm();
-//        } else {
-//            key = k2;
-//            algorithm = new XXXAlgorithm();
-//        }
-
     }
 
     @Override
     public void task3() {
-        voidTask();
-//        print("Starting encryption algorithm for key.");
-//        var encryptedBlockList = algorithm.encrypt(EncryptionAlgorithmAES.convertSecretKeyToString(key), K, iv);
-//        var encryptedKey = encryptedBlockList.get(0);
-//        print("Successfully encrypted key:'" + encryptedKey + "' with K:'" + EncryptionAlgorithmAES.convertSecretKeyToString(K) + "'.");
-//        messenger.sendMessageToAMC(encryptedKey);
-//        print("Sent encrypted key to A.");
-//        messenger.sendMessageToBMC(encryptedKey);
-//        print("Sent encrypted key to B.");
+        var messagesList = getMessagesList();
+        for (var message : messagesList) {
+            if (message.equals("k1")) {
+                algorithm = new ECBAlgorithm();
+                key = k1;
+            } else {
+                algorithm = new XXXAlgorithm();
+                key = k2;
+            }
+            break;
+        }
+
+        var encryptedBlockList = algorithm.encrypt(EncryptionAlgorithmAES.convertSecretKeyToString(key), K, iv);
+        var encryptedKey = encryptedBlockList.get(0);
+
+        sendMessage(MessagePrefix.A, encryptedKey);
+        sendMessage(MessagePrefix.B, encryptedKey);
+
+        print("Task " + currentTask + ':' + "  Successfully encrypted key:'" + encryptedKey + "' with K:'" + EncryptionAlgorithmAES.convertSecretKeyToString(K) + "' and sent it to A and B.");
     }
 
     @Override

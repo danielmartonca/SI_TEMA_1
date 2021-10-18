@@ -45,7 +45,8 @@ public class ClientThread implements Runnable {
     private void getRole() throws IOException {
         try {
             do {
-                String clientMessage = in.readLine().toUpperCase();
+                var line = in.readLine();
+                String clientMessage = line.toUpperCase().substring(line.indexOf('}') + 1);
 
                 NodeRole tempRole = switch (clientMessage) {
                     case "A" -> NodeRole.A;
