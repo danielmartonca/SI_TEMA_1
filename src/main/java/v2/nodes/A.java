@@ -35,6 +35,7 @@ public class A extends Node implements Runnable, Tasks {
         System.out.println(ANSI_YELLOW + "[A]:     " + msg + ANSI_RESET);
     }
 
+
     @Override
     public void run() {
         print("Started");
@@ -106,7 +107,8 @@ public class A extends Node implements Runnable, Tasks {
     public void task4() throws InterruptedException {
         var encryptedKey = messenger.getMessageFromAMC();
         print("Received encrypted key: " + encryptedKey);
-        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(algorithm.customDecrypt(encryptedKey, K, iv));
+        var decryptedKeyString = algorithm.decrypt(List.of(encryptedKey), K, iv);
+        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(decryptedKeyString);
         print("Decrypted key '" + encryptedKey + "' into '" + EncryptionAlgorithmAES.convertSecretKeyToString(this.key) + "'.");
 
         Messenger.setAIsWaiting(false);
@@ -137,9 +139,9 @@ public class A extends Node implements Runnable, Tasks {
         print("Sending encrypted text to B.");
         System.out.flush();
         for (var line : textFileLinesList) {
-            Thread.sleep(1000);
-            var encryptedBlock = algorithm.customEncrypt(line, key, iv);
-            messenger.sendMessageToAB(encryptedBlock);
+            var encryptedBlockList = algorithm.encrypt(line, key, iv);
+            for (var encryptedBlock : encryptedBlockList)
+                messenger.sendMessageToAB(encryptedBlock);
         }
 
         messenger.sendMessageToAB("END");

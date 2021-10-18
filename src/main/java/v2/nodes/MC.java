@@ -41,6 +41,7 @@ public class MC extends Node implements Runnable {
         System.out.println(ANSI_BLUE + "[MC]:    " + msg + ANSI_RESET);
     }
 
+
     @Override
     public void task1() throws InterruptedException {
         waitForSignal();
@@ -65,7 +66,8 @@ public class MC extends Node implements Runnable {
     @Override
     public void task3() throws InterruptedException {
         print("Starting encryption algorithm for key.");
-        var encryptedKey = algorithm.customEncrypt(EncryptionAlgorithmAES.convertSecretKeyToString(key), K, iv);
+        var encryptedBlockList = algorithm.encrypt(EncryptionAlgorithmAES.convertSecretKeyToString(key), K, iv);
+        var encryptedKey = encryptedBlockList.get(0);
         print("Successfully encrypted key:'" + encryptedKey + "' with K:'" + EncryptionAlgorithmAES.convertSecretKeyToString(K) + "'.");
         messenger.sendMessageToAMC(encryptedKey);
         print("Sent encrypted key to A.");

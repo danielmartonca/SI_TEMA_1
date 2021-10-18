@@ -7,6 +7,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.List;
 
 public interface EncryptionAlgorithmAES {
     static SecretKey generateKey(int n) throws NoSuchAlgorithmException {
@@ -31,7 +32,7 @@ public interface EncryptionAlgorithmAES {
         return new IvParameterSpec(iv);
     }
 
-    String customEncrypt(String inputData, SecretKey key, IvParameterSpec iv);
+    List<String> encrypt(String plainText, SecretKey key, IvParameterSpec iv);
 
-    String customDecrypt(String inputData, SecretKey key, IvParameterSpec iv);
+    String decrypt(List<String> cipherTextList, SecretKey key, IvParameterSpec iv);
 }

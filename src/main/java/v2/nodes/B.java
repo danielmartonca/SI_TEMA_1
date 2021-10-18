@@ -8,6 +8,8 @@ import v2.algorithms.XXXAlgorithm;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import java.security.NoSuchAlgorithmException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class B extends Node implements Runnable {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -38,6 +40,7 @@ public class B extends Node implements Runnable {
     void print(String msg) {
         System.out.println(ANSI_PURPLE + "[B]:     " + msg + ANSI_RESET);
     }
+
 
     private void requestKeyFromMC(String encryptionAlgorithm) throws InterruptedException {
         if (encryptionAlgorithm.equals("ECB")) {
@@ -74,7 +77,8 @@ public class B extends Node implements Runnable {
     public void task4() throws InterruptedException {
         var encryptedKey = messenger.getMessageFromBMC();
         print("Received encrypted key: " + encryptedKey);
-        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(algorithm.customDecrypt(encryptedKey, K, iv));
+        var decryptedKeyString = algorithm.decrypt(List.of(encryptedKey), K, iv);
+        this.key = EncryptionAlgorithmAES.convertStringToSecretKey(decryptedKeyString);
         print("Decrypted key '" + encryptedKey + "' into '" + EncryptionAlgorithmAES.convertSecretKeyToString(this.key) + "'.");
 
 
@@ -102,14 +106,19 @@ public class B extends Node implements Runnable {
         while (Messenger.bIsWaiting)
             Thread.sleep(1000);
 
+        messenger.getMessageFromAB();
         String message;
+        List<String> encryptedCipherTextList = new LinkedList<>();
         do {
-            Thread.sleep(1000);
             message = messenger.getMessageFromAB();
-            var decryptedMessage = algorithm.customDecrypt(message, key, iv);
-            print("Received '" + message + "' from A. After decryption i received '" + decryptedMessage + "'.");
-            System.out.flush();
+            encryptedCipherTextList.add(message);
         } while (!message.equals("END"));
+
+        print("Decrypted the fallowing text:");
+        var decryptedText = algorithm.decrypt(encryptedCipherTextList, key, iv);
+        print(decryptedText);
+        System.out.flush();
+
     }
 
     @Override
