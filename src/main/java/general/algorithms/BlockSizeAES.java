@@ -1,7 +1,8 @@
 package general.algorithms;
 
 public enum BlockSizeAES {
-    BLOCK_SIZE_AES(16), BLOCK_SIZE_ECB(128);
+    BLOCK_SIZE_AES(16), BLOCK_SIZE_CFB(8), BLOCK_SIZE_OFB(32), BLOCK_SIZE_ECB(128);
+
 
     private final int size;
 
