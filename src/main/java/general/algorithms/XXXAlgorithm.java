@@ -176,13 +176,21 @@ public class XXXAlgorithm implements EncryptionAlgorithmAES {
     public List<String> encryptCFB(String plainText, SecretKey key, IvParameterSpec iv) {
         List<String> cipherTextList = new LinkedList<>();
         try {
-            //divide string into blocks of fixed size (128) for ECB
-            var blocksList = getStringAsByteBlocksList(plainText, BlockSizeAES.BLOCK_SIZE_CFB);
+            var blocksList = getStringAsByteBlocksList(plainText, BlockSizeAES.BLOCK_SIZE_ECB);
 
-            for (var block : blocksList) {
-                var encryptedBlock = encryptBlockCFB(block, key, iv);  //encrypt each block with a key
-                cipherTextList.add(convertByteToString(encryptedBlock));    //add it to the list
+            var xorValue = iv.getIV();
+            var encryptionValue = encryptBlockCFB(xorValue, key, iv);
+            var encryptedValue = xor(encryptionValue, blocksList.get(0));
+            xorValue = encryptedValue;
+
+            cipherTextList.add(convertByteToString(encryptedValue));
+            for (int i = 1; i < blocksList.size(); i++) {
+                encryptionValue = encryptBlockCFB(xorValue, key, iv);
+                encryptedValue = xor(encryptionValue, blocksList.get(i));
+                xorValue = encryptedValue;
+                cipherTextList.add(convertByteToString(encryptedValue));
             }
+
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
@@ -192,13 +200,15 @@ public class XXXAlgorithm implements EncryptionAlgorithmAES {
     public String decryptCFB(List<String> cipherTextList, SecretKey key, IvParameterSpec iv) {
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            for (var encryptedBlockAsString : cipherTextList) {
-                var encryptedBlock = convertStringToByte(encryptedBlockAsString);
+            var ivByteArray = iv.getIV();
+            var decryptionValue = decryptBlockCFB(ivByteArray, key, iv);
+            var xorValue = cipherTextList.get(0);
+            stringBuilder.append(convertByteToString(xor(convertStringToByte(xorValue), decryptionValue)));
 
-                var decryptedBlock = decryptBlockCFB(encryptedBlock, key, iv);
-                decryptedBlock = removePaddingIfNecessary(decryptedBlock, BlockSizeAES.BLOCK_SIZE_CFB);
-
-                stringBuilder.append(convertByteToString(decryptedBlock));
+            for (int i = 1; i <= cipherTextList.size(); i++) {
+                decryptionValue = decryptBlockCFB(convertStringToByte(xorValue), key, iv);
+                xorValue = cipherTextList.get(i);
+                stringBuilder.append(convertByteToString(xor(convertStringToByte(xorValue), decryptionValue)));
             }
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
