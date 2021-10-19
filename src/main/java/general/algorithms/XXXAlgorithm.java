@@ -33,6 +33,13 @@ public class XXXAlgorithm implements EncryptionAlgorithmAES {
         return s;
     }
 
+    private byte[] xor(byte[] bytes1, byte[] bytes2) {
+        if (bytes1.length != bytes2.length)
+            return null;
+        for (int i = 0; i < bytes1.length; i++)
+            bytes1[i] = (byte) (bytes1[i] ^ bytes2[i]);
+        return bytes1;
+    }
 
     //CBC
     public List<String> encryptCBC(String plainText, SecretKey key, IvParameterSpec iv) {
@@ -41,10 +48,21 @@ public class XXXAlgorithm implements EncryptionAlgorithmAES {
             //divide string into blocks of fixed size (128) for ECB
             var blocksList = getStringAsByteBlocksList(plainText, BlockSizeAES.BLOCK_SIZE_ECB);
 
-            for (var block : blocksList) {
-                var encryptedBlock = encryptBlockCBC(block, key, iv);  //encrypt each block with a key
-                cipherTextList.add(convertByteToString(encryptedBlock));    //add it to the list
+            //do one iteration
+            var xorBlock = blocksList.get(0);
+            var encryptedBlock = encryptBlockCBC(xor(xorBlock, iv.getIV()), key, iv);  //encrypt each block with a key
+            cipherTextList.add(convertByteToString(encryptedBlock));
+            xorBlock = encryptedBlock;
+
+            //repeat until it's finished
+            for (int i = 1; i < blocksList.size(); i++) {
+                var block = blocksList.get(i);
+                block = xor(block, xorBlock);
+                encryptedBlock = encryptBlockCBC(block, key, iv);  //encrypt each block with a key
+                cipherTextList.add(convertByteToString(encryptedBlock));
+                xorBlock = encryptedBlock;
             }
+
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
@@ -54,13 +72,22 @@ public class XXXAlgorithm implements EncryptionAlgorithmAES {
     public String decryptCBC(List<String> cipherTextList, SecretKey key, IvParameterSpec iv) {
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            for (var encryptedBlockAsString : cipherTextList) {
-                var encryptedBlock = convertStringToByte(encryptedBlockAsString);
+            //one iteration
+            var encryptedBlockAsString = cipherTextList.get(0);
+            var encryptedBlock = convertStringToByte(encryptedBlockAsString);
+            var xorBlock = encryptedBlock;
+            var decryptedBlock = decryptBlockCBC(encryptedBlock, key, iv);
+            //decrypted block
+            stringBuilder.append(convertByteToString(xor(decryptedBlock, iv.getIV())));
 
-                var decryptedBlock = decryptBlockCBC(encryptedBlock, key, iv);
-                decryptedBlock = removePaddingIfNecessary(decryptedBlock, BlockSizeAES.BLOCK_SIZE_ECB);
-
-                stringBuilder.append(convertByteToString(decryptedBlock));
+            for (int i = 1; i < cipherTextList.size(); i++) {
+                encryptedBlockAsString = cipherTextList.get(i);
+                encryptedBlock = convertStringToByte(encryptedBlockAsString);
+                decryptedBlock = decryptBlockCBC(encryptedBlock, key, iv);
+                //decrypted block
+                var value = xor(decryptedBlock, xorBlock);
+                stringBuilder.append(convertByteToString(value));
+                xorBlock = encryptedBlock;
             }
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
