@@ -74,6 +74,12 @@ public class B extends Node implements Runnable {
 
     @Override
     public void task7() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         List<String> encryptedCipherTextList = getMessagesList();
 
         print("Decrypted the fallowing text:");

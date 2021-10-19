@@ -36,13 +36,10 @@ public class A extends Node implements Runnable, Tasks {
 
     @Override
     public void task1() {
-        //TODO DELETE COMMENT
-        //HARDCODE
-        var encryptionAlgorithm = "ECB";
-        algorithm = new ECBAlgorithm();
+//        var encryptionAlgorithm = "ECB";
+//        algorithm = new ECBAlgorithm();
 
-
-        //        var encryptionAlgorithm = readEncryptionMode();
+        var encryptionAlgorithm = readEncryptionMode();
         sendMessage(MessagePrefix.B, encryptionAlgorithm);
 
         if (ECBAlgorithm.class.equals(algorithm.getClass())) {
